@@ -1,0 +1,245 @@
+<!doctype html><meta charset="utf-8"><script src="https://makenowjust.github.io/md.html/main.js"></script><noscript>
+<!-- vim: set ft=markdown: -->
+
+# 先読み付き正規表現 (Regular Expression with Look-Ahead)
+
+## 定義
+
+この定義は[[森畑2012]]を大きく参考にしている。
+
+**先読み付き正規表現**(**Regular Expression with Look-Ahead**, $\text{REwLA}$)とは、通常の正規表現に肯定・否定の先読み演算子を追加したものである。
+
+有限のアルファベット$\Sigma$上の$\text{REwLA}$の式は、次のように定義される。
+
+1. $\epsilon$は$\text{REwLA}$の式である。これは空文字列を表す。
+2. $\Sigma$の元$\sigma$は$\text{REwLA}$の式である。これはその文字自身を表す。
+3. $\text{REwLA}$の式$e_1, e_2$があるとき、二つの正規表現の選択を表す$e_1 | e_2$は$\text{REwLA}$の式である。
+4. $\text{REwLA}$の式$e_1, e_2$があるとき、二つの正規表現の連接を表す$e_1 \cdot e_2$は$\text{REwLA}$の式である。
+5. $\text{REwLA}$の式$e$があるとき、正規表現の繰り返しを表す$e^\ast$は$\text{RewLA}_\Sigma$の式である。
+6. $\text{REwLA}$の式$e$があるとき、正規表現の肯定先読みを表す$\langle\text{?=} e \rangle$は$\text{REwLA}$の式である。
+7. $\text{REwLA}$の式$e$があるとき、正規表現の否定先読みを表す$\langle\text{?!} e \rangle$は$\text{REwLA}$の式である。
+
+$e_1 \cdot e_2$も$\cdot$を省略しても問題ない場合、$e_1 e_2$と表す。
+
+$\text{REwLA}$の式$e$は文字列($\Sigma$の元からなるリスト)の集合を定める。これを$e$の言語と呼び$L(e)$で表す。
+直感的には、$L(e)$に含まれる文字列は$e$にマッチする文字列である。
+
+先読みが含まれるため直接的に$L(e)$を定義することは難しい。そこで、補助関数$L'$を定義し、それを使って$L(e)$を定義する。
+まず、$L(e)$と$L'(e, w)$は次のように対応する。
+
+$$
+w \in L(e) \iff \epsilon \in L'(e, w)
+$$
+
+次に$L'(e, w)$の定義を示す。
+
+$$
+\begin{aligned}
+L'(\epsilon, w)                   & = \{ w \}                                                                         \\
+L'(\sigma, \sigma' w)             & = \text{if}\ \sigma = \sigma'\ \text{then}\ \{ w \}\ \text{else}\ \empty          \\
+L'(e_1 | e_2, w)                  & = L'(e_1, w) \cup L'(e_2, w)                                                      \\
+L'(e_1 \cdot e_2, w)              & = \{ y\ |\ x \in L'(e_1, w) \land y \in L'(e_2, x) \}                             \\
+L'(e^\ast, w)                     & = \{ w \} \cup \{ y\ |\ x \in L'(e, w) \land x \ne w \land y \in L'(e^\ast, x) \} \\
+L'(\langle\text{?=} e \rangle, W) & = \text{if}\ \epsilon \in L'(e, w)\ \text{then}\ \{ w \}\ \text{else}\ \empty     \\
+L'(\langle\text{?!} e \rangle, W) & = \text{if}\ \epsilon \notin L'(e, w)\ \text{then}\ \{ w \}\ \text{else}\ \empty  \\
+\end{aligned}
+$$
+
+なお、この関数は呼び出しの度に$\text{REwLA}$の式もしくは走査対象の文字列のいずれかが減少していくようになっている。
+
+こうして定義され肯定先読み$\langle\text{?=} e \rangle$と否定先読み$\langle\text{?!} e \rangle$は、プログラミングで使われる正規表現のものとは異なり、文字列の終端までマッチすることを仮定している。
+すなわちプログラミングで使われる正規表現の肯定先読みを`(?=e)`、否定先読みを`(?!e)`とすると、肯定先読み`(?=e)`に対応するREwLAの式は$\langle\text{?=} e.^\ast \rangle$で、否定先読み`(?!e)`に対応するREwLAの式は$\langle\text{?!} e.^\ast \rangle$となる。ただし、$.^\ast$の$.$は任意の一文字($n = |\Sigma|, \Sigma = \{\sigma_1, \sigma_2, \cdots, \sigma_n\}$として$\sigma_1 | \sigma_2 | \cdots | \sigma_n$)である。
+
+## 考察
+
+### プログラミングの先読みと等しくなる定義
+
+対応が取れるとはいえ先読みの意味がプログラミングで用いられるものと変わってしまっていることは気になる。
+
+これは$L'(e, w)$ではなく$L'(e, W)$として、$W$には続く文字列の集合を受け取るようにすると解決できるのではないだろうか。
+
+その場合の$L(e)$と$L'(e, W)$の対応は次のようになる。
+
+$$
+w \in L(e) \iff w \in L'(e, \{ \epsilon \}) \therefore L(e) = L'(e, \{ \epsilon \})
+$$
+
+そして、$L'(e, W)$の定義はこうなる。
+
+$$
+\begin{aligned}
+L'(\epsilon, W)                   & = W                                                            \\
+L'(\sigma, W)                     & = \sigma W                                                     \\
+L'(e_1 | e_2, W)                  & = L'(e_1, W) \cup L'(e_2, W)                                   \\
+L'(e_1 \cdot e_2, W)              & = L'(e_1, L'(e_2, W))                                          \\
+L'(e^\ast, W)                     & = W \cup L'(e^\ast, L'(e, W) \setminus W)                      \\
+L'(\langle\text{?=} e \rangle, W) & = \bigcup_{x \in L'(e, \{ \epsilon \})} x x^{-1} W             \\
+L'(\langle\text{?!} e \rangle, W) & = W \setminus \bigcup_{x \in L'(e, \{ \epsilon \})} x x^{-1} W \\
+\end{aligned}
+$$
+
+$w W$は文字列の集合$W$の各元の前に$w$を追加する。
+
+$$
+w W = \{ w x | x \in W \}
+$$
+
+$w^{-1} W$は文字列の集合$W$の文字列$w$に対する左商を表す。
+
+$$
+w^{-1} W = \{ x \in \Sigma^\ast | w x \in W \}
+$$
+
+$w w^{-1} W$は上二つの演算の組み合せだが、敢えて詳細に説明すると$W$の元のうち$w$を接頭辞に持つもののみを取り出すことになる。
+
+$$
+w w^{-1} W = \{ w x \in W | x \in \Sigma^\ast \}
+$$
+
+このようにすると$\langle\text{?=} e \rangle$と$\langle\text{?!} e \rangle$の意味をプログラミングにおける`(?=e)`と`(?!e)`から変えずに済むはずだ。
+また、元の定義では$\text{if} \cdots \text{then} \cdots \text{else} \cdots$を使っている部分が集合の操作になって分かりやすくなったように思える。
+
+Q: $w w^{-1} W$に相当する操作に、名前や記号が当てられていないだろうか？
+
+ちなみに、もし$L'(e, W)$を$L'(e, w)$と同様にプログラミングにおける先読みと先読みの意味が変わってもいいとするなら、先読みに対する$L'(e, W)$の定義はより簡単になる。
+そのような$L'(e, W)$を$L''(e, W)$とすると、先読み以外の定義は$L'(e, W)$と同様で、先読みに対しては次のようになる。
+
+$$
+\begin{aligned}
+L''(\langle\text{?=} e \rangle, W) & = W \cap L''(e, \{ \epsilon \}) \\
+L''(\langle\text{?!} e \rangle, W) & = W \setminus L''(e, \{ \epsilon \}) \\
+\end{aligned}
+$$
+
+こうすると、$W$が後に続く文字列の集合であるから、先読みが後続の言語に対する$e$の積集合や差集合を取っていることが明確になる。
+
+ここまで書いて気付いたのだが、先読みの内側の式に続く文字列の集合として$\Sigma^\ast$を渡せば、$L'(e, W)$でも$L''(e, W)$のような定義にできるはずである。
+つまり、その場合の$L'(e, W)$の先読みに対する定義は次のようになる。
+
+$$
+\begin{aligned}
+L'(\langle\text{?=} e \rangle, W) & = W \cap L'(e, \Sigma^\ast)      \\
+L'(\langle\text{?!} e \rangle, W) & = W \setminus L'(e, \Sigma^\ast) \\
+\end{aligned}
+$$
+
+この定義の場合、$L(e)$が正規言語であることが比較的容易に証明できる。
+そのためにまず、$L'(e, W)$が$W$が正規言語である場合に正規言語であることを確認する。
+
+#### 補題: $W$が正規言語であるとき$L'(e, W)$は正規言語である。
+
+証明は$e$の構造に関する帰納法を用いる。
+
+実際にはこれらは、正規言語が各演算について閉じていることから自明と言って差し支えないものである。
+
+1. $\epsilon$の場合、$W$は正規言語であるので$L'(\epsilon, W) = W$も正規言語である。
+2. $\sigma$の場合、$\sigma W = \{ \sigma \} W$で正規言語は連接について閉じているので$L'(\sigma, W) = \sigma W$も正規言語である。
+3. $e_1 | e_2$の場合、$W$が正規言語である場合に$L'(e_1, W)$と$L'(e_1, W)$が正規言語であると仮定すると、正規言語は和集合について閉じているので$L'(e_1 | e_2, W) = L'(e_1, W) \cup L'(e_2, W)$も正規言語である。
+4. $e_1 \cdot e_2$の場合、$W$が正規言語である場合$L'(e_1, W)$と$L'(e_2, W)$が正規言語であると仮定すると、$L'(e_1 \cdot e_2, W) = L'(e_1, L'(e_2, W))$も正規言語である。
+5. $e^\ast$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は差集合について閉じているので$L'(e^\ast, W) = \{ W \} \cup L'(e^\ast, L'(e, W) \setminus W)$も正規言語である。
+   (**これは結論を証明に使っていて循環してる気がする。右辺に$L'(e^\ast, \cdots)$が表れない形に変形しなければいけないはず**)
+6. $\langle\text{?=} e \rangle$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は積集合について閉じていて$\Sigma^\ast$も正規言語なので$L'(\langle\text{?=} e \rangle, W) = W \cap L'(e, \Sigma^\ast)$も正規言語である。
+7. $\langle\text{?!} e \rangle$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は差集合について閉じていて$\Sigma^\ast$も正規言語なので$L'(\langle\text{?!} e \rangle, W) = W \setminus L'(e, \Sigma^\ast)$も正規言語である。
+
+以上で$W$が正規言語であるとき$L'(e, W)$が正規言語であることが証明された。$\boxed{}$
+
+#### 定理: $L(e)$は正規言語である。
+
+定義より$L(e) = L'(e, \{ \epsilon \})$である。$\{ \epsilon \}$は正規言語なので、上の補題より$L(e)$は正規言語である。$\boxed{}$
+
+### $e^\ast$に対する$L'(e, w)$の定義について
+
+[[森畑2012]]の関数の定義はHaskellの記法に従っている。
+そのため、個々の関数の定義が実際に実行することを念頭に置いていて、数学的には本質的ではないがHaskellで無限ループに陥ることを防ぐように定義しているように思える。
+
+特にその傾向が顕著なのが$L'(e^\ast, w)$の右辺の$x \ne w$の部分だ。
+これがあっても無くても、$L'(e^\ast, w)$の値は変わらないように思える。
+
+同様に$L'(e, w)$になるべく対応するように定義した$L'(e^\ast, W)$の右辺の$L'(e, W) \setminus W$も、本質的には$L'(e, W)$のみで問題ないはずである。
+
+### $\text{REwLA}$に対するBrzozowski derivative
+
+$\text{REwLA}$の式に対してBrzozowski derivativeは定義できるだろうか？
+
+定義できないはずがない。というのも$\text{REwLA}$の式$e$の言語$L(e)$は正規言語であり、正規言語の左商が定義できるからだ。
+$\text{REwLA}$の式$e$と$\Sigma$の元$\sigma$について、$e$を$\sigma$でBrzozowski derivativeを取ることを$d(\sigma, e)$と表すとすると、次が成り立つ。
+
+$$
+L(d(\sigma, e)) = \sigma^{-1} L(e)
+$$
+
+$d(\sigma, e)$は次のように定義できる。$\empty = \langle\text{?!} \epsilon \rangle$とする。これは実際に$L(\empty) = \empty$となる。
+
+$$
+\begin{aligned}
+d(\sigma, \epsilon)                   & = \empty \\
+d(\sigma, \sigma')                    & = \text{if}\ \sigma = \sigma'\ \text{then}\ \epsilon \ \text{else}\ \empty \\
+d(\sigma, e_1 | e_2)                  & = d(\sigma, e_1) | d(\sigma, e_2) \\
+d(\sigma, e_1 \cdot e_2)              & = d(\sigma, e_1) e_2 | \nu'(\sigma, e_1) d(\sigma, e_2) \\
+d(\sigma, e^\ast)                     & = d(\sigma, e) e^\ast \\
+d(\sigma, \langle\text{?=} e \rangle) & = \empty \\
+d(\sigma, \langle\text{?!} e \rangle) & = \empty \\
+\end{aligned}
+$$
+
+$\nu(e)$と$\nu'(\sigma, e)$を定義する。$\nu(e)$の値域は$\{ \empty, \epsilon \}$である。$\lnot \empty = \epsilon$、$\lnot \epsilon = \empty$とする。
+
+$$
+\begin{aligned}
+\nu(\epsilon)                   & = \epsilon \\
+\nu(\sigma')                    & = \empty \\
+\nu(e_1 | e_2)                  & = \nu(e_1) | \nu(e_2) \\
+\nu(e_1 \cdot e_2)              & = \nu(e_1) \cdot \nu(e_2) \\
+\nu(e^\ast)                     & = \epsilon \\
+\nu(\langle\text{?=} e \rangle) & = \nu(e) \\
+\nu(\langle\text{?!} e \rangle) & = \lnot \nu(e) \\
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\nu'(\sigma, \epsilon)                   & = \empty \\
+\nu'(\sigma, \sigma')                    & = \empty \\
+\nu'(\sigma, e_1 | e_2)                  & = \nu'(\sigma, e_1) | \nu'(\sigma, e_2) \\
+\nu'(\sigma, e_1 \cdot e_2)              & = \nu'(\sigma, e_1) \cdot \nu'(\sigma, e_2) \\
+\nu'(\sigma, e^\ast)                     & = \epsilon \\
+\nu'(\sigma, \langle\text{?=} e \rangle) & = \langle\text{?=} d(\sigma, e) \rangle | \nu(e) \\
+\nu'(\sigma, \langle\text{?!} e \rangle) & = \langle\text{?!} d(\sigma, e) \rangle | \lnot \nu(e) \\
+\end{aligned}
+$$
+
+$\nu'(\sigma, e)$と$\nu(e)$に$\sigma$を追加したものを考えて、それを$d(\sigma, e)$の中で使うというアイディアは[[Kozen2017]]の**テスト付きクリーニ代数**(**Kleene Algebra with Tests**)の式に対するBrzozowski derivativeから着想した。
+
+また、$d^\ast(\sigma w, e) = d^\ast(w, d(\sigma, e))$、$d^\ast(\epsilon, e) = e$と定義すると、$L_d(e) = \{ w \in \Sigma^\ast | \nu(d^\ast(w, e)) = \epsilon \}$と$d(\sigma, e)$によって$e$の言語を定義できる。
+
+ただ、$L(d(\sigma, e)) = \sigma^{-1} L(e)$や$L(e) = L_d(e)$についてはまだ証明していない。
+
+この$d(\sigma, e)$を応用して、Brzozowski derivativeを使って決定性有限状態オートマトンを構築する方法や、正規表現の等価性の判定を行う方法、部分マッチを行うことができるかもしれない。
+
+## 参考文献
+
+### 森畑2012
+
+[**先読み付き正規表現の有限状態オートマトンへの変換**](https://www.jstage.jst.go.jp/article/jssst/29/1/29_1_1_147/_pdf/)
+森畑 明昌 (2012)
+<https://doi.org/10.11309/jssst.29.1_147>
+
+先読み付き正規表現を、Boolean有限状態機械という有限状態オートマトンを介して決定的有限状態オートマトンに変換する方法を説明している。
+さらに重み付き正規表現や重み付き有限状態オートマトンを用いて、先読み付き正規表現に対して部分マッチを行う方法も説明している。
+
+[森畑2012]: #森畑2012
+
+### Kozen2017
+
+**On the Coalgebraic Theory of Kleene Algebra with Tests**
+Kozen D (2017)
+<https://doi.org/10.1007/978-3-319-47843-2_15>
+
+Kozenによるテスト付きクリーニ代数の解説。比較的——というかかなり新しい。
+あまりしっかりと読めていない。KATの式に対するBrzozowski derivativeの定義だけさっと読んだぐらい。
+
+時間があるときにちゃんと読みたいのだけど、テスト付きクリーニ代数を勉強するにはモデル検査の知識がある程度要求されている気がして、どうにも手が進まない。
+モデル検査もやってみれば案外と面白いかもしれないので、手を出してみたいところ。
+とりあえずAlloyでもやってみるかな。
+
+[Kozen2017]: #Kozen2017
