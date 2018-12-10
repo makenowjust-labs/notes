@@ -22,8 +22,8 @@ title: 先読み付き正規表現
 3. $\text{REwLA}$の式$e_1, e_2$があるとき、二つの正規表現の選択を表す$e_1 | e_2$は$\text{REwLA}$の式である。
 4. $\text{REwLA}$の式$e_1, e_2$があるとき、二つの正規表現の連接を表す$e_1 \cdot e_2$は$\text{REwLA}$の式である。
 5. $\text{REwLA}$の式$e$があるとき、正規表現の繰り返しを表す$e^\ast$は$\text{RewLA}_\Sigma$の式である。
-6. $\text{REwLA}$の式$e$があるとき、正規表現の肯定先読みを表す$\langle\text{?=} e \rangle$は$\text{REwLA}$の式である。
-7. $\text{REwLA}$の式$e$があるとき、正規表現の否定先読みを表す$\langle\text{?!} e \rangle$は$\text{REwLA}$の式である。
+6. $\text{REwLA}$の式$e$があるとき、正規表現の肯定先読みを表す$\langle\texttt{?=} e \rangle$は$\text{REwLA}$の式である。
+7. $\text{REwLA}$の式$e$があるとき、正規表現の否定先読みを表す$\langle\texttt{?!} e \rangle$は$\text{REwLA}$の式である。
 
 $e_1 \cdot e_2$も$\cdot$を省略しても問題ない場合、$e_1 e_2$と表す。
 
@@ -41,20 +41,20 @@ $$
 
 $$
 \begin{aligned}
-L'(\epsilon, w)                   & = \{ w \}                                                                         \\
-L'(\sigma, \sigma' w)             & = \text{if}\ \sigma = \sigma'\ \text{then}\ \{ w \}\ \text{else}\ \empty          \\
-L'(e_1 | e_2, w)                  & = L'(e_1, w) \cup L'(e_2, w)                                                      \\
-L'(e_1 \cdot e_2, w)              & = \{ y\ |\ x \in L'(e_1, w) \land y \in L'(e_2, x) \}                             \\
-L'(e^\ast, w)                     & = \{ w \} \cup \{ y\ |\ x \in L'(e, w) \land x \ne w \land y \in L'(e^\ast, x) \} \\
-L'(\langle\text{?=} e \rangle, W) & = \text{if}\ \epsilon \in L'(e, w)\ \text{then}\ \{ w \}\ \text{else}\ \empty     \\
-L'(\langle\text{?!} e \rangle, W) & = \text{if}\ \epsilon \notin L'(e, w)\ \text{then}\ \{ w \}\ \text{else}\ \empty  \\
+L'(\epsilon, w)                   & = \{ w \}                                                                                \\
+L'(\sigma, \sigma' w)             & = \texttt{if}\ \sigma = \sigma'\ \texttt{then}\ \{ w \}\ \texttt{else}\ \empty           \\
+L'(e_1 | e_2, w)                  & = L'(e_1, w) \cup L'(e_2, w)                                                             \\
+L'(e_1 \cdot e_2, w)              & = \{ y\ |\ x \in L'(e_1, w) \land y \in L'(e_2, x) \}                                    \\
+L'(e^\ast, w)                     & = \{ w \} \cup \{ y\ |\ x \in L'(e, w) \land x \ne w \land y \in L'(e^\ast, x) \}        \\
+L'(\langle\texttt{?=} e \rangle, W) & = \texttt{if}\ \epsilon \in L'(e, w)\ \texttt{then}\ \{ w \}\ \texttt{else}\ \empty    \\
+L'(\langle\texttt{?!} e \rangle, W) & = \texttt{if}\ \epsilon \notin L'(e, w)\ \texttt{then}\ \{ w \}\ \texttt{else}\ \empty \\
 \end{aligned}
 $$
 
 なお、この関数は呼び出しの度に$\text{REwLA}$の式もしくは走査対象の文字列のいずれかが減少していくようになっている。
 
-こうして定義され肯定先読み$\langle\text{?=} e \rangle$と否定先読み$\langle\text{?!} e \rangle$は、プログラミングで使われる正規表現のものとは異なり、文字列の終端までマッチすることを仮定している。
-すなわちプログラミングで使われる正規表現の肯定先読みを`(?=e)`、否定先読みを`(?!e)`とすると、肯定先読み`(?=e)`に対応するREwLAの式は$\langle\text{?=} e.^\ast \rangle$で、否定先読み`(?!e)`に対応するREwLAの式は$\langle\text{?!} e.^\ast \rangle$となる。ただし、$.^\ast$の$.$は任意の一文字($n = |\Sigma|, \Sigma = \{\sigma_1, \sigma_2, \cdots, \sigma_n\}$として$\sigma_1 | \sigma_2 | \cdots | \sigma_n$)である。
+こうして定義され肯定先読み$\langle\texttt{?=} e \rangle$と否定先読み$\langle\texttt{?!} e \rangle$は、プログラミングで使われる正規表現のものとは異なり、文字列の終端までマッチすることを仮定している。
+すなわちプログラミングで使われる正規表現の肯定先読みを`(?=e)`、否定先読みを`(?!e)`とすると、肯定先読み`(?=e)`に対応するREwLAの式は$\langle\texttt{?=} e.^\ast \rangle$で、否定先読み`(?!e)`に対応するREwLAの式は$\langle\texttt{?!} e.^\ast \rangle$となる。ただし、$.^\ast$の$.$は任意の一文字($n = |\Sigma|, \Sigma = \{\sigma_1, \sigma_2, \cdots, \sigma_n\}$として$\sigma_1 | \sigma_2 | \cdots | \sigma_n$)である。
 
 ## 考察
 
@@ -74,13 +74,13 @@ $$
 
 $$
 \begin{aligned}
-L'(\epsilon, W)                   & = W                                                            \\
-L'(\sigma, W)                     & = \sigma W                                                     \\
-L'(e_1 | e_2, W)                  & = L'(e_1, W) \cup L'(e_2, W)                                   \\
-L'(e_1 \cdot e_2, W)              & = L'(e_1, L'(e_2, W))                                          \\
-L'(e^\ast, W)                     & = W \cup L'(e^\ast, L'(e, W) \setminus W)                      \\
-L'(\langle\text{?=} e \rangle, W) & = \bigcup_{x \in L'(e, \{ \epsilon \})} x x^{-1} W             \\
-L'(\langle\text{?!} e \rangle, W) & = W \setminus \bigcup_{x \in L'(e, \{ \epsilon \})} x x^{-1} W \\
+L'(\epsilon, W)                   & = W                                                              \\
+L'(\sigma, W)                     & = \sigma W                                                       \\
+L'(e_1 | e_2, W)                  & = L'(e_1, W) \cup L'(e_2, W)                                     \\
+L'(e_1 \cdot e_2, W)              & = L'(e_1, L'(e_2, W))                                            \\
+L'(e^\ast, W)                     & = W \cup L'(e^\ast, L'(e, W) \setminus W)                        \\
+L'(\langle\texttt{?=} e \rangle, W) & = \bigcup_{x \in L'(e, \{ \epsilon \})} x x^{-1} W             \\
+L'(\langle\texttt{?!} e \rangle, W) & = W \setminus \bigcup_{x \in L'(e, \{ \epsilon \})} x x^{-1} W \\
 \end{aligned}
 $$
 
@@ -102,8 +102,8 @@ $$
 w w^{-1} W = \{ w x \in W | x \in \Sigma^\ast \}
 $$
 
-このようにすると$\langle\text{?=} e \rangle$と$\langle\text{?!} e \rangle$の意味をプログラミングにおける`(?=e)`と`(?!e)`から変えずに済むはずだ。
-また、元の定義では$\text{if} \cdots \text{then} \cdots \text{else} \cdots$を使っている部分が集合の操作になって分かりやすくなったように思える。
+このようにすると$\langle\texttt{?=} e \rangle$と$\langle\texttt{?!} e \rangle$の意味をプログラミングにおける`(?=e)`と`(?!e)`から変えずに済むはずだ。
+また、元の定義では$\texttt{if} \cdots \texttt{then} \cdots \texttt{else} \cdots$を使っている部分が集合の操作になって分かりやすくなったように思える。
 
 Q: $w w^{-1} W$に相当する操作に、名前や記号が当てられていないだろうか？
 
@@ -112,8 +112,8 @@ Q: $w w^{-1} W$に相当する操作に、名前や記号が当てられてい�
 
 $$
 \begin{aligned}
-L''(\langle\text{?=} e \rangle, W) & = W \cap L''(e, \{ \epsilon \}) \\
-L''(\langle\text{?!} e \rangle, W) & = W \setminus L''(e, \{ \epsilon \}) \\
+L''(\langle\texttt{?=} e \rangle, W) & = W \cap L''(e, \{ \epsilon \})      \\
+L''(\langle\texttt{?!} e \rangle, W) & = W \setminus L''(e, \{ \epsilon \}) \\
 \end{aligned}
 $$
 
@@ -124,8 +124,8 @@ $$
 
 $$
 \begin{aligned}
-L'(\langle\text{?=} e \rangle, W) & = W \cap L'(e, \Sigma^\ast)      \\
-L'(\langle\text{?!} e \rangle, W) & = W \setminus L'(e, \Sigma^\ast) \\
+L'(\langle\texttt{?=} e \rangle, W) & = W \cap L'(e, \Sigma^\ast)      \\
+L'(\langle\texttt{?!} e \rangle, W) & = W \setminus L'(e, \Sigma^\ast) \\
 \end{aligned}
 $$
 
@@ -144,8 +144,8 @@ $$
 4. $e_1 \cdot e_2$の場合、$W$が正規言語である場合$L'(e_1, W)$と$L'(e_2, W)$が正規言語であると仮定すると、$L'(e_1 \cdot e_2, W) = L'(e_1, L'(e_2, W))$も正規言語である。
 5. $e^\ast$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は差集合について閉じているので$L'(e^\ast, W) = \{ W \} \cup L'(e^\ast, L'(e, W) \setminus W)$も正規言語である。
    (**これは結論を証明に使っていて循環してる気がする。右辺に$L'(e^\ast, \cdots)$が表れない形に変形しなければいけないはず**)
-6. $\langle\text{?=} e \rangle$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は積集合について閉じていて$\Sigma^\ast$も正規言語なので$L'(\langle\text{?=} e \rangle, W) = W \cap L'(e, \Sigma^\ast)$も正規言語である。
-7. $\langle\text{?!} e \rangle$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は差集合について閉じていて$\Sigma^\ast$も正規言語なので$L'(\langle\text{?!} e \rangle, W) = W \setminus L'(e, \Sigma^\ast)$も正規言語である。
+6. $\langle\texttt{?=} e \rangle$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は積集合について閉じていて$\Sigma^\ast$も正規言語なので$L'(\langle\texttt{?=} e \rangle, W) = W \cap L'(e, \Sigma^\ast)$も正規言語である。
+7. $\langle\texttt{?!} e \rangle$の場合、$W$が正規言語である場合$L'(e, W)$が正規言語であると仮定すると、正規言語は差集合について閉じていて$\Sigma^\ast$も正規言語なので$L'(\langle\texttt{?!} e \rangle, W) = W \setminus L'(e, \Sigma^\ast)$も正規言語である。
 
 以上で$W$が正規言語であるとき$L'(e, W)$が正規言語であることが証明された。$\boxed{}$
 
@@ -155,13 +155,12 @@ $$
 
 ### $e^\ast$に対する$L'(e, w)$の定義について
 
-[[森畑2012]]の関数の定義はHaskellの記法に従っている。
-そのため、個々の関数の定義が実際に実行することを念頭に置いていて、数学的には本質的ではないがHaskellで無限ループに陥ることを防ぐように定義しているように思える。
-
-特にその傾向が顕著なのが$L'(e^\ast, w)$の右辺の$x \ne w$の部分だ。
+$L'(e^\ast, w)$の右辺の$x \ne w$の部分がどうして必要なのかよく分からない。
+もちろん、$L'(e, w)$の$e$か$w$のいずれかが呼び出しの度に減少することを保証するためには必要なのは分かるのだけど、そもそもその性質がどうして必要なのだろうか？
+(証明のため？)
 これがあっても無くても、$L'(e^\ast, w)$の値は変わらないように思える。
 
-同様に$L'(e, w)$になるべく対応するように定義した$L'(e^\ast, W)$の右辺の$L'(e, W) \setminus W$も、本質的には$L'(e, W)$のみで問題ないはずである。
+同様に$L'(e, w)$になるべく対応するように定義した$L'(e^\ast, W)$の右辺の$L'(e, W) \setminus W$も、$L'(e, W)$のみでいいのではないかという気がしている。
 
 ### $\text{REwLA}$に対するBrzozowski derivative
 
@@ -174,17 +173,17 @@ $$
 L(d(\sigma, e)) = \sigma^{-1} L(e)
 $$
 
-$d(\sigma, e)$は次のように定義できる。$\empty = \langle\text{?!} \epsilon \rangle$とする。これは実際に$L(\empty) = \empty$となる。
+$d(\sigma, e)$は次のように定義できる。$\empty = \langle\texttt{?!} \epsilon \rangle$とする。これは実際に$L(\empty) = \empty$となる。
 
 $$
 \begin{aligned}
-d(\sigma, \epsilon)                   & = \empty \\
-d(\sigma, \sigma')                    & = \text{if}\ \sigma = \sigma'\ \text{then}\ \epsilon \ \text{else}\ \empty \\
-d(\sigma, e_1 | e_2)                  & = d(\sigma, e_1) | d(\sigma, e_2) \\
-d(\sigma, e_1 \cdot e_2)              & = d(\sigma, e_1) e_2 | \nu'(\sigma, e_1) d(\sigma, e_2) \\
-d(\sigma, e^\ast)                     & = d(\sigma, e) e^\ast \\
-d(\sigma, \langle\text{?=} e \rangle) & = \empty \\
-d(\sigma, \langle\text{?!} e \rangle) & = \empty \\
+d(\sigma, \epsilon)                   & = \empty                                                                         \\
+d(\sigma, \sigma')                    & = \texttt{if}\ \sigma = \sigma'\ \texttt{then}\ \epsilon \ \texttt{else}\ \empty \\
+d(\sigma, e_1 | e_2)                  & = d(\sigma, e_1) | d(\sigma, e_2)                                                \\
+d(\sigma, e_1 \cdot e_2)              & = d(\sigma, e_1) e_2 | \nu'(\sigma, e_1) d(\sigma, e_2)                          \\
+d(\sigma, e^\ast)                     & = d(\sigma, e) e^\ast                                                            \\
+d(\sigma, \langle\texttt{?=} e \rangle) & = \empty                                                                       \\
+d(\sigma, \langle\texttt{?!} e \rangle) & = \empty                                                                       \\
 \end{aligned}
 $$
 
@@ -192,25 +191,25 @@ $\nu(e)$と$\nu'(\sigma, e)$を定義する。$\nu(e)$の値域は$\{ \empty, \e
 
 $$
 \begin{aligned}
-\nu(\epsilon)                   & = \epsilon \\
-\nu(\sigma')                    & = \empty \\
-\nu(e_1 | e_2)                  & = \nu(e_1) | \nu(e_2) \\
+\nu(\epsilon)                   & = \epsilon                \\
+\nu(\sigma')                    & = \empty                  \\
+\nu(e_1 | e_2)                  & = \nu(e_1) | \nu(e_2)     \\
 \nu(e_1 \cdot e_2)              & = \nu(e_1) \cdot \nu(e_2) \\
-\nu(e^\ast)                     & = \epsilon \\
-\nu(\langle\text{?=} e \rangle) & = \nu(e) \\
-\nu(\langle\text{?!} e \rangle) & = \lnot \nu(e) \\
+\nu(e^\ast)                     & = \epsilon                \\
+\nu(\langle\texttt{?=} e \rangle) & = \nu(e)                \\
+\nu(\langle\texttt{?!} e \rangle) & = \lnot \nu(e)          \\
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-\nu'(\sigma, \epsilon)                   & = \empty \\
-\nu'(\sigma, \sigma')                    & = \empty \\
-\nu'(\sigma, e_1 | e_2)                  & = \nu'(\sigma, e_1) | \nu'(\sigma, e_2) \\
-\nu'(\sigma, e_1 \cdot e_2)              & = \nu'(\sigma, e_1) \cdot \nu'(\sigma, e_2) \\
-\nu'(\sigma, e^\ast)                     & = \epsilon \\
-\nu'(\sigma, \langle\text{?=} e \rangle) & = \langle\text{?=} d(\sigma, e) \rangle | \nu(e) \\
-\nu'(\sigma, \langle\text{?!} e \rangle) & = \langle\text{?!} d(\sigma, e) \rangle | \lnot \nu(e) \\
+\nu'(\sigma, \epsilon)                   & = \epsilon                                                 \\
+\nu'(\sigma, \sigma')                    & = \empty                                                   \\
+\nu'(\sigma, e_1 | e_2)                  & = \nu'(\sigma, e_1) | \nu'(\sigma, e_2)                    \\
+\nu'(\sigma, e_1 \cdot e_2)              & = \nu'(\sigma, e_1) \cdot \nu'(\sigma, e_2)                \\
+\nu'(\sigma, e^\ast)                     & = \epsilon                                                 \\
+\nu'(\sigma, \langle\texttt{?=} e \rangle) & = \langle\texttt{?=} d(\sigma, e) \rangle | \nu(e)       \\
+\nu'(\sigma, \langle\texttt{?!} e \rangle) & = \langle\texttt{?!} d(\sigma, e) \rangle | \lnot \nu(e) \\
 \end{aligned}
 $$
 
@@ -220,18 +219,55 @@ $\nu'(\sigma, e)$と$\nu(e)$に$\sigma$を追加したものを考えて、そ�
 
 ただ、$L(d(\sigma, e)) = \sigma^{-1} L(e)$や$L(e) = L_d(e)$についてはまだ証明していない。
 
-Brzozowski derivativeを使って決定性有限状態オートマトンを構築する方法や、正規表現の等価性の判定を行う方法、部分マッチを行う方法を、この$d(\sigma, e)$で応用できるかもしれない。
+Brzozowski derivativeを用いた決定性有限状態オートマトンの構築([[Owens2009]])や、正規表現の等価性の判定([[Almeida2009]])、部分マッチの取り出し([[Sulzmann2014]])などを、この$d(\sigma, e)$を使って先読み付き正規表現について拡張できるかもしれない。
+
+### 二重の否定先読みは肯定先読みと等しい
+
+否定先読みを二重に適用することで肯定先読みを表現できる。
+つまり、$\langle\texttt{?!} \langle\texttt{?!} e \rangle \rangle = \langle\texttt{?=} e \rangle$である。
+このことは$L'(e, W)$や$\nu'(\sigma, e)$の定義を見ると分かりやすい。
+
+**よって$\text{REwLA}$の式の定義から肯定先読みを除くことができる**。
+
+### 後読みについて
+
+ここまで先読みについての考察ばかりで後読みについては考えてこなかったが、少し考えてみたいと思う。
+
+まず正規言語に対する対合(involution)あるいは鏡像(mirror image)という演算について考える。
+$W$を正規言語とする。$W^I = \{ \sigma_n \cdots \sigma_2 \sigma_1 | \sigma_1 \sigma_2 \cdots \sigma_n \in W \}$と定義する。
+これは、$W$に含まれる文字列を逆順にしたものからなる集合を取る演算である。
+この$W^I$は正規言語となることが知られている。(証明は[[新屋2017]]を参照)
+
+また正規言語$W, X$について、$(W \cdot X)^I = X^I \cdot W^I$である。
+(他にも$(W^I)^I = W$などが成り立つ。)
+
+ここで$L(e^I) = L(e)^I$を満たすものとして、正規表現の対合$e^I$を考える。
+$\cdot$や$|$などは$e^I$は簡単に定義できる。実際、先読みのない正規表現の場合は対合の定義は自明である。
+
+それでは、$L((\langle\texttt{?=} e_1 \rangle e_2)^I) = L(\langle\texttt{?=} e_1 \rangle e_2)^I$を満たすような$(\langle\texttt{?=} e_1 \rangle e_2)^I$はどのような正規表現だろうか？
+これは自明ではない。というのも$e_2^I \langle\texttt{?=} e_1^I \rangle$ではないからだ。
+例えば$L(\langle\texttt{?=} \sigma \rangle \sigma)^I = \{ \sigma \}$だが$L(\sigma \langle\texttt{?=} \sigma \rangle) = \empty$である。
+
+そこで$\langle\texttt{?=} e \rangle^I = \langle\texttt{?<=} e^I \rangle$ということにする。
+同様に否定先読みについても$\langle\texttt{?!} e \rangle^I = \langle\texttt{?<!} e^I \rangle$とする。
+
+この$\langle\texttt{?<=} e \rangle$と$\langle\texttt{?<!} e \rangle$が、肯定・否定後読みである。
+実際、それらはプログラミングで使われる正規表現の後読みと同じようにはたらく。
+
+このように、後読みは先読みのある正規表現に対合を考えたときに自然と現れる概念である。
 
 ## 参考文献
 
 ### 森畑2012
 
-[**先読み付き正規表現の有限状態オートマトンへの変換**](https://www.jstage.jst.go.jp/article/jssst/29/1/29_1_1_147/_pdf/)
+**先読み付き正規表現の有限状態オートマトンへの変換**
 森畑 明昌 (2012)
 <https://doi.org/10.11309/jssst.29.1_147>
 
 先読み付き正規表現を、Boolean有限状態機械という有限状態オートマトンを介して決定的有限状態オートマトンに変換する方法を説明している。
 さらに重み付き正規表現や重み付き有限状態オートマトンを用いて、先読み付き正規表現に対して部分マッチを行う方法も説明している。
+
+定義にHaskellの文法を使っているのが特徴的な気がする。
 
 [森畑2012]: #森畑2012
 
@@ -249,3 +285,54 @@ Kozenによるテスト付きクリーニ代数の解説。比較的——とい
 とりあえずAlloyでもやってみるかな。
 
 [Kozen2017]: #Kozen2017
+
+### Owens2009
+
+**Regular-expression derivatives re-examined**
+Owens S, Reppy J, Turon A (2009)
+<https://doi.org/10.1017/S0956796808007090>
+
+正規表現の微分(Brzozowski derivative)を使ってDFAを構築する方法を説明している。
+理論というよりは実用的な話が多く、現実的な計算量・状態数のDFAを構築するための工夫をいくつか紹介している。
+正規表現の等価性の弱い表記(Weaker notions of RE equivalence)なんかしっかりと確認したい。
+
+[Owens2009]: #Owens2009
+
+### Almeida2009
+
+**Testing the Equivalence of Regular Languages**
+Almeida M, Moreira N, Reis R (2009)
+<https://doi.org/10.4204/EPTCS.3.4>
+
+いくつかの正規表現の等価性の判定のアルゴリズムを説明して、それらの速度を比較している。
+また、それらのアルゴリズムがオートマトンの余代数的な観点から等しいものであると説明している。
+(この辺りはよく分かっていない。自分にはオートマトンの文脈で余代数というと双模倣性が関わってくる、くらいの認識しかない。)
+
+derivativeを使っているのは$\text{AM}$というアルゴリズム。
+
+結果を見た感じだと、$\text{equiv}$系のアルゴリズムが速そうだけど、このアルゴリズムの詳細はこの論文には書かれていないようなのでよく分からない。
+
+[Almeida2009]: #Almeida2009
+
+### Sulzmann2014
+
+**POSIX regular expression parsing with derivatives**
+Sulzmann M, Lu K (2014)
+<https://doi.org/10.1007/978-3-319-07151-0_13>
+
+POSIXの正規表現をderivativeを使って実装する方法を説明している。
+POSIXの正規表現には部分マッチが存在するため、parsing treeというものをderivativeしながら構築していくことで部分マッチをサポートしているようだ。
+
+[Sulzmann2014]: #Sulzmann2014
+
+### 新屋2017
+
+**オートマトン理論再考**
+新屋 良磨 (2017)
+<https://doi.org/10.11309/jssst.34.3_3>
+
+オートマトンの定義・基本的な性質から始まって、最終的には言語の母関数を用いて正規言語と有理関数との関係を示している。
+とはいってもボク自身はこの論文の内容をよく分かっていない。
+ちゃんと読めば分かる気がするので読もう。
+
+[新屋2017]: #新屋2017
