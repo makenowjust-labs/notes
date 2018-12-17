@@ -1,4 +1,4 @@
-<!doctype html><meta charset="utf-8"><script src="https://makenowjust.github.io/md.html/main.js"></script><noscript>
+<!doctype html><meta charset="utf-8"><script src="./main.js"></script><noscript>
 <!-- vim: set ft=markdown: -->
 ---
 title: 先読み付き正規表現
@@ -7,7 +7,9 @@ title: 先読み付き正規表現
 # 先読み付き正規表現 (Regular Expression with Look-Ahead)
 
 著: [@MakeNowJust](https://github.com/MakeNowJust)
-最終更新日: 2018/12/10
+最終更新日: 2018/12/14
+
+**注意**: このページは何箇所か(何箇所も)不正確な部分があります。
 
 ## 定義
 
@@ -218,6 +220,8 @@ $\nu'(\sigma, e)$と$\nu(e)$に$\sigma$を追加したものを考えて、そ�
 また、$d^\ast(\sigma w, e) = d^\ast(w, d(\sigma, e))$、$d^\ast(\epsilon, e) = e$と定義すると、$L_d(e) = \{ w \in \Sigma^\ast | \nu(d^\ast(w, e)) = \epsilon \}$と$d(\sigma, e)$によって$e$の言語を定義できる。
 
 ただ、$L(d(\sigma, e)) = \sigma^{-1} L(e)$や$L(e) = L_d(e)$についてはまだ証明していない。
+
+**追記**: 証明した→[先読み付き正規表現 その2](./rewla2.html)
 
 Brzozowski derivativeを用いた決定性有限状態オートマトンの構築([[Owens2009]])や、正規表現の等価性の判定([[Almeida2009]])、部分マッチの取り出し([[Sulzmann2014]])などを、この$d(\sigma, e)$を使って先読み付き正規表現について拡張できるかもしれない。
 
